@@ -1,0 +1,31 @@
+{
+  "name": "book-mangement-api",
+  "version": "1.0.0",
+  "description": "Book Management API",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/demonicirfan/Book-Mangement-API.git"
+  },
+  "keywords": [
+    "API",
+    "Nodejs",
+    "Express",
+    "MongoDB",
+    "Mongoose"
+  ],
+  "author": "@demonicirfan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/demonicirfan/Book-Mangement-API/issues"
+  },
+  "homepage": "https://github.com/demonicirfan/Book-Mangement-API#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.13"
+  }
+}
