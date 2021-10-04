@@ -27,8 +27,6 @@ booky.get('/', function (req, res) {
  */
 
 booky.get('/is/:isbn', function (req, res) {
-  console.log(req.params.isbn);
-  console.log(database.books);
   var getSpecificBook = database.books.filter(function (book) {
     return book.ISBN === req.params.isbn;
   });
@@ -91,7 +89,7 @@ booky.get('/d/:language', function (req, res) {
 });
 /*
  * Route         "/authors"
- * Description   Get specific books on language
+ * Description   Get all the authors
  * Access        PUBLIC
  * Parameters    none
  * Methods       Get
@@ -104,7 +102,7 @@ booky.get('/author', function (req, res) {
 });
 /*
  * Route         "/authors/book"
- * Description   Get specific authors based on books
+ * Description   Get a list of authors based on books
  * Access        PUBLIC
  * Parameters    isbn
  * Methods       GET
@@ -115,7 +113,7 @@ booky.get('/author/book/:isbn', function (req, res) {
     return author.books.includes(req.params.isbn);
   });
 
-  if (getSpecidifAuthor.length === 0) {
+  if (getSpecificAuthor.length === 0) {
     return res.json({
       error: "No author found for the book of ".concat(req.params.isbn)
     });

@@ -88,8 +88,29 @@ booky.get('/author', (req, res) => {
 });
 
 /*
+ * Route         "/author"
+ * Description   Get specific author on id
+ * Access        PUBLIC
+ * Parameters    i
+ * Methods       Get
+ */
+
+booky.get('/author/:id', (req, res) => {
+  const getSpecificAuthor = database.author.filter(
+    (author) => author.id == req.params.id
+  );
+
+  if (getSpecificAuthor.length === 0) {
+    return res.json({
+      error: `No author found for the id of ${req.params.id}`,
+    });
+  }
+  return res.json({ author: getSpecificAuthor });
+});
+
+/*
  * Route         "/authors/book"
- * Description   Get specific authors based on books
+ * Description   Get a list of authors based on books
  * Access        PUBLIC
  * Parameters    isbn
  * Methods       GET
@@ -105,7 +126,6 @@ booky.get('/author/book/:isbn', (req, res) => {
       error: `No author found for the book of ${req.params.isbn}`,
     });
   }
-
   return res.json({ authors: getSpecificAuthor });
 });
 
