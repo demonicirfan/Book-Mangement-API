@@ -23,8 +23,6 @@ booky.get('/', (req, res) => {
  */
 
 booky.get('/is/:isbn', (req, res) => {
-  console.log(req.params.isbn);
-  console.log(database.books);
   const getSpecificBook = database.books.filter(
     (book) => book.ISBN === req.params.isbn
   );
@@ -79,25 +77,36 @@ booky.get('/d/:language', (req, res) => {
 
 /*
  * Route         "/authors"
- * Description   Get specific books on language
+ * Description   Get all the authors
  * Access        PUBLIC
  * Parameters    none
  * Methods       Get
  */
 
 booky.get('/author', (req, res) => {
-  return (res.json = { author: database.author });
+  return res.json({ author: database.author });
 });
+
 /*
- * Route         "/authors"
- * Description   Get specific books on language
+ * Route         "/authors/book"
+ * Description   Get specific authors based on books
  * Access        PUBLIC
- * Parameters    none
- * Methods       Get
+ * Parameters    isbn
+ * Methods       GET
  */
 
-booky.get('/author', (res, req) => {
-  return (res.json = { author: database.author });
+booky.get('/author/book/:isbn', (req, res) => {
+  const getSpecificAuthor = database.author.filter((author) =>
+    author.books.includes(req.params.isbn)
+  );
+
+  if (getSpecificAuthor.length === 0) {
+    return res.json({
+      error: `No author found for the book of ${req.params.isbn}`,
+    });
+  }
+
+  return res.json({ authors: getSpecificAuthor });
 });
 
 booky.listen(3000, () => {
