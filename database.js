@@ -34,7 +34,7 @@ const author = [
   },
   {
     id: 3,
-    name: 'aman',
+    name: 'apj',
     books: ['343423fefd'],
   },
 ];
@@ -43,7 +43,12 @@ const publication = [
   {
     id: 1,
     name: 'oxford',
-    books: ['12345Book', '343423fefd'],
+    books: ['12345Book'],
+  },
+  {
+    id: 2,
+    name: 'MDB',
+    books: ['343423fefd'],
   },
 ];
 

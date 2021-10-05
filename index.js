@@ -1,7 +1,11 @@
 const express = require('express');
+var bodyParser = require('body-parser');
 const database = require('./database');
+
 const booky = express();
 
+booky.use(bodyParser.urlencoded({ extended: true }));
+booky.use(bodyParser.json());
 /*
  * Route         "/"
  * Description   Get all the books
@@ -127,6 +131,99 @@ booky.get('/author/book/:isbn', (req, res) => {
     });
   }
   return res.json({ authors: getSpecificAuthor });
+});
+
+/*
+ * Route         "/publication"
+ * Description   Get all the publications
+ * Access        PUBLIC
+ * Parameters    none
+ * Methods       GET
+ */
+
+booky.get('/publication', (req, res) => {
+  return res.json({ publication: database.publication });
+});
+
+/*
+ * Route         "/publication"
+ * Description   Get a publication based on id
+ * Access        PUBLIC
+ * Parameters    id
+ * Methods       GET
+ */
+
+booky.get('/publication/:id', (req, res) => {
+  const getSpecificPublicaiton = database.publication.filter(
+    (publication) => publication.id == req.params.id
+  );
+  if (getSpecificPublicaiton.length === 0) {
+    error: `No publicaiton found for the id of ${req.params.id}`;
+  }
+  return res.json({ publication: getSpecificPublicaiton });
+});
+
+/*
+ * Route         "/publication"
+ * Description   Get a publication based on book
+ * Access        PUBLIC
+ * Parameters    id
+ * Methods       GET
+ */
+
+booky.get('/publication/:books', (req, res) => {
+  const getSpecificPublicaiton = database.publication.filter(
+    (publication) => publication.books == req.params.books //this is the condition filter requires for modifying the array
+  );
+  if (getSpecificPublicaiton.length === 0) {
+    error: `No publicaiton found for the id of ${req.params.books}`;
+  }
+  return res.json({ publication: getSpecificPublicaiton });
+});
+
+//! POST requests
+//add bew book
+//add new publication
+//add new author
+
+/*
+ * Route         "/book/new"
+ * Description   Add new book
+ * Access        PUBLIC
+ * Parameters    None
+ * Methods       POST
+ */
+
+booky.post('/book/new', (req, res) => {
+  const newBook = req.body;
+  database.books.push(newBook);
+  return res.json({ updateBooks: database.books });
+});
+/*
+ * Route         "/publication/new"
+ * Description   Add new publicaiton
+ * Access        PUBLIC
+ * Parameters    None
+ * Methods       POST
+ */
+
+booky.post('/publication/new', (req, res) => {
+  const newPublication = req.body;
+  database.publication.push(newPublication);
+  return res.json({ updatepublication: database.publication });
+});
+/*
+ * Route         "/author/new"
+ * Description   Add new author
+ * Access        PUBLIC
+ * Parameters    None
+ * Methods       POST
+ */
+
+booky.post('/author/new', (req, res) => {
+  const newAuthor = req.body;
+  database.author.push(newAuthor);
+  return res.json({ updateAuthor: database.author });
 });
 
 booky.listen(3000, () => {
