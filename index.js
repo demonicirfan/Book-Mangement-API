@@ -223,11 +223,16 @@ booky.post('/book/new', async (req, res) => {
  * Methods       POST
  */
 
-booky.post('/publication/new', (req, res) => {
-  const newPublication = req.body;
-  database.publication.push(newPublication);
-  return res.json({ updatepublication: database.publication });
+booky.post('/publication/new', async (req, res) => {
+  const { newPublication } = req.body;
+  const addNewPublication = PublicationModel.create(newPublication);
+
+  return res.json({
+    author: addNewPublication,
+    message: 'Publication was added',
+  });
 });
+
 /*
  * Route         "/author/new"
  * Description   Add new author
@@ -236,14 +241,80 @@ booky.post('/publication/new', (req, res) => {
  * Methods       POST
  */
 
-booky.post('/author/new', (req, res) => {
-  const newAuthor = req.body;
-  database.author.push(newAuthor);
-  return res.json({ updateAuthor: database.author });
+booky.post('/author/new', async (req, res) => {
+  const { newAuthor } = req.body;
+  const addNewAuthor = AuthorModel.create(newAuthor);
+
+  return res.json({ author: addNewAuthor, message: 'Author was added' });
 });
 
-// ! PUT
-//update book details if publicaiton is changed
+//! --------------------- PUT ------------------------
+
+/*
+ * Route         "/book/update/:isbn"
+ * Description   update book title based on isbn
+ * Access        PUBLIC
+ * Parameters    isbn
+ * Methods       PUT
+ */
+
+booky.put('/book/update/:isbn', async (req, res) => {
+  const updatedBook = await BookModel.findOneAndUpdate(
+    {
+      ISBN: req.params.isbn,
+    },
+    {
+      title: req.body.bookTitle,
+    },
+    {
+      new: true,
+    }
+  );
+
+  return res.json({
+    books: updatedBook,
+  });
+});
+
+/*
+ * Route         "/book/author/update"
+ * Description   update or /add new author
+ * Access        PUBLIC
+ * Parameters    isbn
+ * Methods       PUT
+ */
+
+booky.put('/book/author/update/:isbn', async (req, res) => {
+  //Todo: update book database
+  const updatedBook = await BookModel.findOneAndUpdate(
+    {
+      ISBN: req.params.isbn,
+    },
+    {
+      $addToSet: {
+        authors: req.body.newAuthor,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  //Todo: update author database
+  const updatedAuthor = await AuthorModel.findOneAndUpdate(
+    {
+      id: req.body.newAuthor,
+    },
+    {
+      $addtoSet: {
+        books: req.params.isbn,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+});
 
 /*
  * Route         "/publication/update/book"
@@ -252,15 +323,15 @@ booky.post('/author/new', (req, res) => {
  * Parameters    isbn
  * Methods       PUT
  */
-booky.put('/publication/update/book/:isbn', (req, res) => {
-  // update the publication database
+booky.put('/publication/update/book/:isbn', async (req, res) => {
+  //Todo: update the publication database
   database.publication.forEach((pub) => {
     if (pub.id === req.body.pubId) {
       return pub.books.push(req.body.isbn);
     }
   });
 
-  // update the books database
+  //Todo: update the books database
   database.books.forEach((book) => {
     if (book.ISBN === req.params.isbn) {
       book.publication = req.body.pubId;
@@ -275,10 +346,23 @@ booky.put('/publication/update/book/:isbn', (req, res) => {
   });
 });
 
-// ! DELETE
-//  Delete a book
-// Delete author from book
-// Delete author from book and related book from auhtor
+//!--------------------   DELETE   ---------------------------
+/*
+ * Route         "/book/delete"
+ * Description   Delete a book
+ * Access        PUBLIC
+ * Parameters    isbn
+ * Methods       DELETE
+ */
+
+booky.delete('/book/delete/:isbn', async (req, res) => {
+  const updatedBookDatabase = await BookModel.findOneAndDelete({
+    ISBN: req.params.isbn,
+  });
+  return res.json({
+    books: updatedBookDatabase,
+  });
+});
 
 /*
  * Route         "/book/delete/author"
@@ -326,14 +410,6 @@ booky.delete('/book/delete/author/:isbn/:authorId', (req, res) => {
     });
   });
 });
-
-/*
- * Route         "/book/delete"
- * Description   Delete a book
- * Access        PUBLIC
- * Parameters    isbn
- * Methods       DELETE
- */
 
 booky.listen(3000, () => {
   console.log('Server is up and running on port 3000');
